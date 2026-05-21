@@ -1,0 +1,3 @@
+[submodule "flight-sim"]
+	path = flight-sim
+	url = https://github.com/AIGsniperYt/flight-sim.git
