@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Sim — Versions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --forest-floor: #04140d;
+    --forest-understory: #071f14;
+    --forest-canopy: #0b2e1f;
+    --forest-light: #145a32;
+    --emerald: #4cff9a;
+    --emerald-soft: rgba(76, 255, 154, 0.35);
+    --emerald-glow: rgba(76, 255, 154, 0.2);
+    --text-primary: #dff5ea;
+    --text-soft: rgba(223, 245, 234, 0.85);
+    --text-muted: rgba(223, 245, 234, 0.55);
+    --glass-bg: rgba(7, 31, 20, 0.55);
+    --glass-bg-strong: rgba(4, 20, 13, 0.7);
+    --glass-border: rgba(76, 255, 154, 0.12);
+    --glass-border-hover: rgba(76, 255, 154, 0.3);
+    --line-subtle: rgba(255, 255, 255, 0.06);
+    --line-visible: rgba(255, 255, 255, 0.12);
+    --shadow-sm: rgba(0, 0, 0, 0.2);
+    --shadow-md: rgba(0, 0, 0, 0.35);
+    --shadow-lg: rgba(0, 0, 0, 0.5);
+    --emerald-rgb: 76, 255, 154;
+    --card-bg: rgba(7,31,20,0.92);
+    --card-bg-soft: rgba(7,31,20,0.88);
+    --panel-bg: rgba(4,20,13,0.85);
+    --input-bg: rgba(7,31,20,0.4);
+}
+
+:root[data-theme="alpine"] {
+    --forest-floor: #041718;
+    --forest-understory: #072526;
+    --forest-canopy: #0b3536;
+    --forest-light: #1a6b6a;
+    --emerald: #5dffe1;
+    --emerald-soft: rgba(93, 255, 225, 0.35);
+    --emerald-glow: rgba(93, 255, 225, 0.2);
+    --emerald-rgb: 93, 255, 225;
+    --text-primary: #e6fbf8;
+    --text-soft: rgba(230, 251, 248, 0.85);
+    --text-muted: rgba(230, 251, 248, 0.55);
+    --glass-bg: rgba(7, 37, 38, 0.55);
+    --glass-bg-strong: rgba(4, 23, 24, 0.7);
+    --glass-border: rgba(93, 255, 225, 0.12);
+    --glass-border-hover: rgba(93, 255, 225, 0.3);
+    --card-bg: rgba(7,37,38,0.92);
+    --card-bg-soft: rgba(7,37,38,0.88);
+    --panel-bg: rgba(4,23,24,0.85);
+    --input-bg: rgba(7,37,38,0.4);
+}
+
+:root[data-theme="purple"] {
+    --forest-floor: #11001c;
+    --forest-understory: #290025;
+    --forest-canopy: #35012c;
+    --forest-light: #4f0147;
+    --emerald: #ff5f9a;
+    --emerald-soft: rgba(255, 95, 154, 0.35);
+    --emerald-glow: rgba(255, 95, 154, 0.2);
+    --emerald-rgb: 255, 95, 154;
+    --text-primary: #e1d0ea;
+    --text-soft: rgba(225, 208, 234, 0.85);
+    --text-muted: rgba(225, 208, 234, 0.55);
+    --glass-bg: rgba(41, 0, 37, 0.55);
+    --glass-bg-strong: rgba(17, 0, 28, 0.7);
+    --glass-border: rgba(255, 95, 154, 0.12);
+    --glass-border-hover: rgba(255, 95, 154, 0.3);
+    --card-bg: rgba(41,0,37,0.92);
+    --card-bg-soft: rgba(41,0,37,0.88);
+    --panel-bg: rgba(17,0,28,0.85);
+    --input-bg: rgba(41,0,37,0.4);
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: 'Sora', sans-serif;
+    font-weight: 400;
+    background: linear-gradient(180deg, var(--forest-understory) 0%, var(--forest-floor) 100%);
+    color: var(--text-primary);
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+}
+
+#starfield {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    background: var(--forest-floor);
+}
+
+#scrollProgress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--emerald), var(--forest-light));
+    z-index: 1001;
+    width: 0%;
+    transition: width 0.05s linear;
+    box-shadow: 0 0 10px var(--emerald-glow);
+}
+
+#scrollProgress::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background: var(--emerald);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--emerald-glow);
+}
+
+h1, h2, h3 {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+}
+
+.section-title {
+    font-size: 2.6rem;
+    text-align: center;
+    margin-bottom: 56px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.section-title::before,
+.section-title::after {
+    content: '';
+    height: 1px;
+    width: 60px;
+    background: linear-gradient(90deg, transparent, var(--emerald));
+    opacity: 0.4;
+}
+
+.section-title::after {
+    background: linear-gradient(90deg, var(--emerald), transparent);
+}
+
+.section-divider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    will-change: transform;
+    opacity: 0.35;
+}
+
+.section-divider svg {
+    display: block;
+    width: 110%;
+    height: 120px;
+    margin-left: -5%;
+}
+
+.section-divider svg + svg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 110%;
+    height: 100%;
+    margin-left: -5%;
+    opacity: 0.35;
+}
+
+@media (min-width: 768px) {
+    .section-divider svg { height: 160px; }
+}
+
+@media (min-width: 1200px) {
+    .section-divider svg { height: 200px; }
+}
+
+.parallax-slow {
+    will-change: transform;
+    transition: transform 0.1s ease-out;
+}
+
+.parallax-medium {
+    will-change: transform;
+    transition: transform 0.15s ease-out;
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.reveal-left.revealed {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.reveal-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.reveal-right.revealed {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 32px;
+    background: linear-gradient(135deg, var(--emerald), var(--forest-light));
+    color: var(--forest-floor);
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 4px 20px rgba(var(--emerald-rgb), 0.25);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(var(--emerald-rgb), 0.35);
+}
+
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background: transparent;
+    color: var(--emerald);
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border-radius: 100px;
+    border: 1.5px solid var(--emerald);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.btn-ghost:hover {
+    background: var(--emerald);
+    color: var(--forest-floor);
+    box-shadow: 0 0 20px var(--emerald-glow);
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 16px 0;
+    transition: background 0.4s, backdrop-filter 0.4s, border-color 0.4s;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+}
+
+header.scrolled {
+    background: rgba(4, 20, 13, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom-color: var(--glass-border);
+}
+
+header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: -0.03em;
+}
+
+.logo span {
+    color: var(--emerald);
+}
+
+.logo-mark {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--emerald);
+    border-radius: 50%;
+    margin-right: 8px;
+    box-shadow: 0 0 10px var(--emerald-glow);
+    vertical-align: middle;
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 6px var(--emerald-glow); }
+    50% { box-shadow: 0 0 16px var(--emerald-soft); }
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 32px;
+}
+
+.nav-links a {
+    color: var(--text-soft);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.3s;
+    position: relative;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background: var(--emerald);
+    transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.nav-links a:hover {
+    color: var(--emerald);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.theme-toggle {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-soft);
+    padding: 7px 18px;
+    border-radius: 100px;
+    cursor: pointer;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.8rem;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+    border-color: var(--emerald);
+    box-shadow: 0 0 14px var(--emerald-glow);
+    color: var(--emerald);
+}
+
+/* ── Hero ── */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(var(--emerald-rgb),0.06) 0%, transparent 100%);
+    padding: 120px 0 80px;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 40%, var(--forest-canopy) 0%, transparent 60%);
+    opacity: 0.5;
+}
+
+.floating-shapes {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.floating-shapes .shape {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--emerald);
+    opacity: 0.04;
+}
+
+.floating-shapes .shape-1 {
+    width: 400px;
+    height: 400px;
+    top: -100px;
+    left: -80px;
+    animation: float-shape 25s ease-in-out infinite;
+}
+
+.floating-shapes .shape-2 {
+    width: 250px;
+    height: 250px;
+    bottom: -50px;
+    right: -50px;
+    animation: float-shape 20s ease-in-out infinite reverse;
+}
+
+.floating-shapes .shape-3 {
+    width: 180px;
+    height: 180px;
+    top: 45%;
+    left: 55%;
+    animation: float-shape 22s ease-in-out infinite 2s;
+}
+
+.floating-shapes .shape-4 {
+    width: 120px;
+    height: 120px;
+    top: 20%;
+    right: 15%;
+    animation: float-shape 18s ease-in-out infinite 4s;
+    opacity: 0.03;
+}
+
+@keyframes float-shape {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(40px, -30px) scale(1.08); }
+    50% { transform: translate(-20px, 20px) scale(0.95); }
+    75% { transform: translate(30px, 30px) scale(1.05); }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 6px 18px;
+    background: var(--card-bg-soft);
+    border: 1px solid var(--glass-border);
+    border-radius: 100px;
+    font-size: 0.8rem;
+    color: var(--emerald);
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+    font-family: 'Sora', sans-serif;
+    font-weight: 500;
+}
+
+.hero h1 {
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--emerald) 50%, var(--text-primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.15;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: var(--text-soft);
+    max-width: 600px;
+    margin: 0 auto 36px;
+    line-height: 1.8;
+}
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: bob-down 2s ease-in-out infinite;
+}
+
+.scroll-indicator .line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--emerald), transparent);
+}
+
+@keyframes bob-down {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* ── Version Timeline ── */
+.version-timeline {
+    padding: 100px 0;
+    position: relative;
+}
+
+.timeline {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 32px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--emerald), var(--forest-light), transparent);
+    opacity: 0.3;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 80px;
+    margin-bottom: 40px;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: 24px;
+    top: 8px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--emerald);
+    border: 3px solid var(--forest-floor);
+    box-shadow: 0 0 12px var(--emerald-glow);
+    z-index: 2;
+}
+
+.timeline-dot.latest {
+    width: 24px;
+    height: 24px;
+    left: 21px;
+    top: 6px;
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.timeline-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    transition: all 0.3s;
+}
+
+.timeline-card:hover {
+    border-color: var(--glass-border-hover);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transform: translateX(4px);
+}
+
+.timeline-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.timeline-header h3 {
+    font-size: 1.3rem;
+    color: var(--text-primary);
+}
+
+.timeline-version {
+    display: inline-block;
+    padding: 3px 12px;
+    background: var(--emerald);
+    color: var(--forest-floor);
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    border-radius: 100px;
+    letter-spacing: 0.02em;
+}
+
+.timeline-commit {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: rgba(var(--emerald-rgb), 0.06);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.timeline-description {
+    color: var(--text-soft);
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+    line-height: 1.7;
+}
+
+.timeline-features {
+    list-style: none;
+    margin-bottom: 16px;
+}
+
+.timeline-features li {
+    position: relative;
+    padding-left: 18px;
+    margin-bottom: 4px;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.timeline-features li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--emerald);
+    opacity: 0.5;
+}
+
+.timeline-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.timeline-actions .btn-ghost {
+    font-size: 0.8rem;
+    padding: 6px 16px;
+}
+
+/* ── Stats section ── */
+.stats-section {
+    padding: 100px 0;
+    position: relative;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 32px 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    transition: border-color 0.3s;
+}
+
+.stat-card:hover {
+    border-color: var(--glass-border-hover);
+}
+
+.stat-number {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--emerald);
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* ── Footer ── */
+footer {
+    padding: 60px 0 32px;
+    border-top: 1px solid var(--line-subtle);
+    text-align: center;
+}
+
+.footer-content {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.copyright {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-bottom: 16px;
+}
+
+.breadcrumb a {
+    color: var(--emerald);
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .timeline::before {
+        left: 20px;
+    }
+    .timeline-item {
+        padding-left: 56px;
+    }
+    .timeline-dot {
+        left: 12px;
+    }
+    .timeline-dot.latest {
+        left: 9px;
+    }
+    .nav-links {
+        display: none;
+    }
+    .section-title {
+        font-size: 2rem;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+</style>
+</head>
+<body>
+
+<div id="scrollProgress"></div>
+<canvas id="starfield"></canvas>
+
+<!-- Header -->
+<header id="header">
+    <div class="container">
+        <a href="#" class="logo">
+            <span class="logo-mark"></span>
+            Flight <span>Sim</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#versions">Versions</a></li>
+            <li><a href="#stats">Stats</a></li>
+            <li><a href="./index.html">Portfolio</a></li>
+            <li><button id="themeToggle" class="theme-toggle">Switch Theme</button></li>
+        </ul>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+    </div>
+    <div class="hero-content">
+        <div class="hero-badge"><i class="fa-solid fa-plane" style="margin-right:6px"></i> WebGL Flight Simulator</div>
+        <h1>Flight Sim — Version History</h1>
+        <p>Every iteration of the browser-based 3D flight sim, from the first import to the latest physics overhaul. Browse, compare, and launch any version.</p>
+        <div class="hero-actions">
+            <a href="#versions" class="btn-primary">
+                <i class="fa-solid fa-timeline" style="font-size:0.85rem"></i>
+                View Timeline
+            </a>
+            <a href="flight-sim/index.html" class="btn-ghost">
+                Launch Latest
+                <i class="fa-solid fa-arrow-right" style="font-size:0.75rem"></i>
+            </a>
+        </div>
+    </div>
+    <div class="scroll-indicator">
+        <span>Scroll</span>
+        <div class="line"></div>
+    </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider parallax-medium" data-speed="-0.08">
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="none">
+        <path d="M0,40 C240,160 480,0 720,120 C960,240 1200,20 1440,80 L1440,200 L0,200 Z" fill="var(--forest-canopy)" opacity="0.3"/>
+        <path d="M0,60 C320,180 640,40 960,140 C1280,240 1360,60 1440,100 L1440,200 L0,200 Z" fill="var(--forest-understory)"/>
+    </svg>
+</div>
+
+<!-- Version Timeline -->
+<section class="version-timeline" id="versions">
+    <div class="container">
+        <h2 class="section-title reveal">Version Timeline</h2>
+        <div class="timeline" id="timeline">
+            <!-- Injected by JS -->
+        </div>
+    </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider parallax-slow" data-speed="-0.05">
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="none">
+        <path d="M0,20 C360,120 720,0 1080,80 C1260,120 1350,40 1440,60 L1440,200 L0,200 Z" fill="rgba(11,46,31,0.2)"/>
+        <path d="M0,40 C400,160 800,20 1200,100 C1320,140 1380,60 1440,80 L1440,200 L0,200 Z" fill="var(--forest-floor)"/>
+    </svg>
+</div>
+
+<!-- Stats -->
+<section class="stats-section" id="stats">
+    <div class="container">
+        <h2 class="section-title reveal">By the Numbers</h2>
+        <div class="stats-grid" id="statsGrid">
+            <!-- Injected by JS -->
+        </div>
+    </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider parallax-medium" data-speed="-0.07">
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="none">
+        <path d="M0,140 C240,60 480,180 720,100 C960,20 1200,160 1440,80 L1440,200 L0,200 Z" fill="rgba(11,46,31,0.25)"/>
+        <path d="M0,160 C320,80 640,200 960,120 C1200,40 1320,160 1440,100 L1440,200 L0,200 Z" fill="var(--forest-floor)"/>
+    </svg>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="breadcrumb">
+                <a href="./index.html">Portfolio</a>
+                <span>/</span>
+                <span>Flight Sim Versions</span>
+            </div>
+            <p class="copyright">&copy; 2025 AIGsniper. Flight Simulator</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+/* ============================================================
+   VERSION DATA — Edit this array to add/update versions
+   ============================================================ */
+const ROOT_PATH = './';
+
+const versions = [
+    {
+        name: "Original Import",
+        version: "v0.1",
+        hash: "133f4fd",
+        date: "Initial",
+        description: "The first import of the flight sim project. A monolithic Three.js arcade flyer with basic terrain, PointerLockControls, and simple forward movement.",
+        features: [
+            "Monolithic script with Three.js r128",
+            "PointerLockControls for mouse-look",
+            "Basic simplex-noise terrain generation",
+            "Simple arcade movement (translateZ)",
+            "Basic fog and render pipeline"
+        ],
+        url: ROOT_PATH + "flight-sim-v0.1/index.html",
+        latest: false
+    },
+    {
+        name: "Physics Overhaul",
+        version: "v1.0",
+        hash: "8da2587",
+        date: "",
+        description: "Major physics improvement — real aerodynamics with lift, drag, thrust, and weight. Debug arrows, minimap, artificial horizon, and orbit camera added.",
+        features: [
+            "Real aerodynamic engine (Cessna-172 parameters)",
+            "Angle of attack, stall mechanics, throttle control",
+            "Debug force arrows (F6/F7)",
+            "Artificial horizon flight instrument",
+            "Minimap with terrain shading",
+            "Orbit camera with smooth transitions"
+        ],
+        url: ROOT_PATH + "flight-sim-v1.0/index.html",
+        latest: false
+    },
+    {
+        name: "GPU Optimisation",
+        version: "v2.0",
+        hash: "c2ba033",
+        date: "",
+        description: "GPU terrain rendering, merged geometries per LOD, predictive chunk loading. Drastically reduced draw calls and massive FPS improvement.",
+        features: [
+            "GPU-based terrain rendering",
+            "Merged geometries per LOD (2600→12 draw calls)",
+            "Predictive chunk loading with processing metrics",
+            "Tile cache with LRU eviction"
+        ],
+        url: ROOT_PATH + "flight-sim-v2.0/index.html",
+        latest: false
+    },
+    {
+        name: "Terrain Collision",
+        version: "v3.0",
+        hash: "1e29cb7",
+        date: "",
+        description: "Collision detection with terrain. Fixed critical CPU/GPU noise divergence bug. Crash logic with angle-of-impact, vertical velocity, and overspeed detection.",
+        features: [
+            "Terrain collision detection and response",
+            "Fixed CPU/GPU noise divergence bug",
+            "Crash logic: angle of impact, vertical velocity, overspeed",
+            "Stall visual indicator",
+            "Respawn system"
+        ],
+        url: ROOT_PATH + "flight-sim-v3.0/index.html",
+        latest: false
+    },
+    {
+        name: "Horizon LOD & Fog",
+        version: "v3.5",
+        hash: "4705a07",
+        date: "",
+        description: "Horizon LOD at step=50 doubles render distance to 5000wu. Fog tuned for atmosphere. Profiler fixed for correct avg FPS. Respawn slot exhaustion fixed.",
+        features: [
+            "Horizon LOD doubles render distance",
+            "Fog tuned to 0.0004 for atmosphere",
+            "Fixed profiler (correct avg FPS)",
+            "Fixed respawn slot exhaustion"
+        ],
+        url: ROOT_PATH + "flight-sim-v3.5/index.html",
+        latest: false
+    },
+    {
+        name: "Terrain Gen Rework",
+        version: "v4.0",
+        hash: "f0be98d",
+        date: "",
+        description: "Complete overhaul of terrain generation — regional mountains, ridge lines, sigmoid softening, exponential slope widths, and altitude bands.",
+        features: [
+            "Radical terrain gen update (phases 1 & 2)",
+            "Regional mountain clusters and plains",
+            "Ridge line generation with artifact fixes",
+            "Sigmoid softening for natural height profiles",
+            "Exponential slope width with altitude bands"
+        ],
+        url: ROOT_PATH + "flight-sim-v4.0/index.html",
+        latest: false
+    },
+    {
+        name: "Biomes & Water",
+        version: "v5.0",
+        hash: "75373fc",
+        date: "",
+        description: "Biome system with dunes, tundra, rainforest, expansive regions, and lake rendering. Heavy visual and content update.",
+        features: [
+            "Biome system with expansive regions",
+            "Desert dunes with asymmetric wind-blown shapes",
+            "Tundra ruggedness above 300m",
+            "Lake water in lowland basins"
+        ],
+        url: ROOT_PATH + "flight-sim-v5.0/index.html",
+        latest: false
+    },
+    {
+        name: "Lakes & Water",
+        version: "v6.0",
+        hash: "dab01ee",
+        date: "Latest",
+        description: "Water rendering in 0m lowland basins. The latest version with all features combined.",
+        features: [
+            "Water in fragment shader",
+            "All previous features combined"
+        ],
+        url: ROOT_PATH + "flight-sim-v6.0/index.html",
+        latest: true
+    }
+];
+
+const stats = [
+    { number: "40+", label: "Commits" },
+    { number: "9", label: "Major Versions" },
+    { number: "8 mo", label: "Development Span" },
+    { number: "Three.js", label: "Core Engine" }
+];
+
+/* ============================================================
+   RENDER FUNCTIONS
+   ============================================================ */
+function renderTimeline() {
+    const container = document.getElementById('timeline');
+    container.innerHTML = versions.map((v, i) => `
+        <div class="timeline-item reveal" style="transition-delay:${i * 0.08}s">
+            <div class="timeline-dot ${v.latest ? 'latest' : ''}"></div>
+            <div class="timeline-card">
+                <div class="timeline-header">
+                    <h3>${v.name}</h3>
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                        <span class="timeline-version">${v.version}</span>
+                        ${v.hash !== "uncommitted" ? `<span class="timeline-commit">${v.hash}</span>` : '<span class="timeline-commit" style="color:var(--emerald)">uncommitted</span>'}
+                    </div>
+                </div>
+                <p class="timeline-description">${v.description}</p>
+                <ul class="timeline-features">
+                    ${v.features.map(f => `<li>${f}</li>`).join('')}
+                </ul>
+                <div class="timeline-actions">
+                    ${v.url ? `<a href="${v.url}" target="_blank" class="btn-ghost">
+                        <i class="fa-solid fa-play" style="font-size:0.7rem"></i>
+                        Launch
+                    </a>` : '<span class="btn-ghost" style="opacity:0.4;pointer-events:none">Not deployed</span>'}
+                    <a href="https://github.com/AIGsniperYt/flight-sim/commit/${v.hash}" target="_blank" class="btn-ghost" style="${v.hash === 'uncommitted' ? 'opacity:0.4;pointer-events:none' : ''}">
+                        <i class="fa-brands fa-github" style="font-size:0.75rem"></i>
+                        Commit
+                    </a>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderStats() {
+    const container = document.getElementById('statsGrid');
+    container.innerHTML = stats.map(s => `
+        <div class="stat-card reveal">
+            <div class="stat-number">${s.number}</div>
+            <div class="stat-label">${s.label}</div>
+        </div>
+    `).join('');
+}
+
+renderTimeline();
+renderStats();
+
+/* ============================================================
+   HEADER SCROLL EFFECT
+   ============================================================ */
+const header = document.getElementById('header');
+const progressBar = document.getElementById('scrollProgress');
+
+window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+    header.classList.toggle('scrolled', scrollY > 60);
+
+    document.querySelectorAll('.parallax-slow, .parallax-medium').forEach(el => {
+        const speed = parseFloat(el.dataset.speed) || -0.05;
+        const rect = el.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const viewCenter = window.innerHeight / 2;
+        const offset = (center - viewCenter) * speed;
+        el.style.transform = `translateY(${offset}px)`;
+    });
+});
+
+let themeRgb = '76,255,154';
+function refreshThemeRgb() {
+    themeRgb = getComputedStyle(document.documentElement).getPropertyValue('--emerald-rgb').trim() || '76,255,154';
+}
+refreshThemeRgb();
+
+/* ============================================================
+   STARFIELD
+   ============================================================ */
+(function initStarfield() {
+    const s = document.getElementById('starfield');
+    const sctx = s.getContext('2d');
+    if (!sctx) return;
+
+    let stars = [];
+    let connections = [];
+    let time = 0;
+    let lastStreak = Date.now();
+    let activeStreak = null;
+    let initialized = false;
+
+    const LAYERS = [
+        { label:'far',  parallax:[0.0,0.12],  size:[0.8,1.5],    baseA:[0.30,0.45],   weight:0.30, edgeBoost:1.4, twinkle:[0.1,0.6] },
+        { label:'mid',  parallax:[0.18,0.38], size:[1.2,2.0],    baseA:[0.45,0.60],   weight:0.30, edgeBoost:1.3, twinkle:[0.3,1.0] },
+        { label:'near', parallax:[0.45,0.70], size:[1.8,3.2],    baseA:[0.60,0.80],   weight:0.25, edgeBoost:1.2, twinkle:[0.5,1.3] },
+        { label:'fore', parallax:[0.80,1.25], size:[3.0,5.5],    baseA:[0.80,1.00],   weight:0.15, edgeBoost:1.1, twinkle:[0.6,1.5] },
+    ];
+
+    function rand(a, b) { return a + Math.random() * (b - a); }
+
+    function getDocHeight() {
+        return Math.max(
+            document.documentElement.scrollHeight,
+            document.body.scrollHeight,
+            document.documentElement.offsetHeight,
+            document.body.offsetHeight
+        );
+    }
+
+    function generate() {
+        stars = [];
+        connections = [];
+        const w = window.innerWidth;
+        const h = getDocHeight();
+        s.width = w;
+        s.height = window.innerHeight;
+        s.style.width = w + 'px';
+        s.style.height = window.innerHeight + 'px';
+
+        const cellW = 82, cellH = 82;
+        const cols = Math.ceil(w / cellW);
+        const rows = Math.ceil(h / cellH);
+
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                let roll = Math.random(), layer;
+                for (let l of LAYERS) {
+                    roll -= l.weight;
+                    if (roll <= 0) { layer = l; break; }
+                }
+                if (!layer) layer = LAYERS[LAYERS.length - 1];
+
+                const x = (c + 0.5) * cellW + (Math.random() - 0.5) * cellW * 0.7;
+                const y = (r + 0.5) * cellH + (Math.random() - 0.5) * cellH * 0.7;
+                const isEdge = x < w * 0.08 || x > w * 0.92;
+
+                const baseA = isEdge ? layer.baseA[1] * rand(1, layer.edgeBoost) : rand(...layer.baseA);
+                stars.push({
+                    x, y,
+                    parallax: rand(...layer.parallax),
+                    r: isEdge ? layer.size[1] * rand(1, layer.edgeBoost) : rand(...layer.size),
+                    baseA,
+                    currentA: baseA * 0.55,
+                    isLit: false,
+                    inBand: false,
+                    pulse: 0,
+                    twinkleSpeed: rand(...layer.twinkle),
+                    twinklePhase: Math.random() * Math.PI * 2,
+                });
+            }
+        }
+
+        for (let i = 0; i < stars.length; i++) {
+            for (let j = i + 1; j < stars.length; j++) {
+                const a = stars[i], b = stars[j];
+                if (Math.abs(a.parallax - b.parallax) > 0.25) continue;
+                const aEdge = a.x < w * 0.1 || a.x > w * 0.9;
+                const bEdge = b.x < w * 0.1 || b.x > w * 0.9;
+                if (aEdge !== bEdge) continue;
+                const dy = a.y - b.y;
+                if (Math.abs(dy) > 200) continue;
+                const dx = a.x - b.x;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const maxD = aEdge ? 140 : 100;
+                if (dist < maxD && dist > 8) {
+                    connections.push({ a, b, dist, maxDist: maxD });
+                }
+            }
+        }
+        initialized = true;
+    }
+
+    function tryGenerate() {
+        if (initialized) return;
+        if (getDocHeight() < 100) { setTimeout(tryGenerate, 200); return; }
+        generate();
+    }
+    if (document.readyState === 'complete') {
+        tryGenerate();
+    } else {
+        window.addEventListener('load', tryGenerate);
+        if (document.readyState !== 'loading') tryGenerate();
+    }
+
+    function fitCanvas() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        s.width = w;
+        s.height = h;
+        s.style.width = w + 'px';
+        s.style.height = h + 'px';
+    }
+    fitCanvas();
+    window.addEventListener('resize', fitCanvas);
+
+    function draw() {
+        time += 0.016;
+        const w = s.width, vh = s.height;
+        const scrollY = window.scrollY;
+        const viewMidY = scrollY + vh / 2;
+
+        sctx.clearRect(0, 0, w, vh);
+
+        const bandH = 200;
+        const bandA = 0.04;
+        const grad = sctx.createRadialGradient(w / 2, vh / 2, 0, w / 2, vh / 2, bandH);
+        grad.addColorStop(0, `rgba(${themeRgb},${bandA * 1.8})`);
+        grad.addColorStop(0.35, `rgba(${themeRgb},${bandA})`);
+        grad.addColorStop(1, `rgba(${themeRgb},0)`);
+        sctx.fillStyle = grad;
+        sctx.fillRect(0, vh / 2 - bandH, w, bandH * 2);
+
+        connections.forEach(c => {
+            const a = c.a, b = c.b;
+            const ay = a.y - scrollY * a.parallax, by = b.y - scrollY * b.parallax;
+            if ((ay < -40 && by < -40) || (ay > vh + 40 && by > vh + 40)) return;
+            const dx = a.x - b.x;
+            const dy = ay - by;
+            const screenDist = Math.sqrt(dx * dx + dy * dy);
+            if (screenDist > 160) return;
+            const fade = Math.max(0, 1 - screenDist / c.maxDist);
+            const litCount = (a.isLit ? 1 : 0) + (b.isLit ? 1 : 0);
+            const scrollFade = litCount >= 2 ? 1.0 : Math.max(0, 1 - Math.abs((a.y + b.y) / 2 - viewMidY) / (vh * 1.2));
+            const litBoost = litCount * 0.35;
+            const alpha = fade * scrollFade * (0.1 + litBoost);
+            if (alpha > 0.01) {
+                sctx.beginPath();
+                sctx.moveTo(a.x, ay);
+                sctx.lineTo(b.x, by);
+                sctx.strokeStyle = `rgba(${themeRgb},${alpha})`;
+                sctx.lineWidth = 0.4 + litCount * 0.5;
+                sctx.stroke();
+            }
+        });
+
+        stars.forEach(st => {
+            const screenY = st.y - scrollY * st.parallax;
+            if (screenY < -50 || screenY > vh + 50) return;
+
+            const distFromView = Math.abs(st.y - viewMidY);
+            const bandHalf = vh * 0.18;
+
+            const wasInBand = st.inBand;
+            st.inBand = distFromView < bandHalf;
+            if (st.inBand && !wasInBand) {
+                st.isLit = !st.isLit;
+                st.pulse = 1.0;
+            }
+
+            const targetA = st.baseA * (st.isLit ? 1.0 : 0.55);
+            st.currentA += (targetA - st.currentA) * 0.08;
+
+            const twinkle = Math.sin(time * st.twinkleSpeed + st.twinklePhase) * 0.12 + 0.88;
+            const alpha = st.currentA * twinkle;
+            const size = st.r * (st.isLit ? 1.0 : 0.65);
+
+            sctx.beginPath();
+            sctx.arc(st.x, screenY, size, 0, Math.PI * 2);
+            sctx.fillStyle = `rgba(${themeRgb},${Math.min(alpha, 0.95)})`;
+            sctx.fill();
+
+            if (st.pulse > 0.01) {
+                sctx.beginPath();
+                sctx.arc(st.x, screenY, size * (1 + st.pulse * 4), 0, Math.PI * 2);
+                sctx.strokeStyle = `rgba(${themeRgb},${st.pulse * 0.4})`;
+                sctx.lineWidth = 2 * st.pulse;
+                sctx.stroke();
+                st.pulse *= 0.9;
+            }
+        });
+
+        if (!activeStreak && Date.now() - lastStreak > 5000 + Math.random() * 3000) {
+            lastStreak = Date.now();
+            const src = stars[Math.floor(Math.random() * stars.length)];
+            const sScreenY = src.y - scrollY * src.parallax;
+            if (sScreenY >= -100 && sScreenY <= vh + 100) {
+                const angle = (Math.random() - 0.5) * 0.5;
+                const len = 100 + Math.random() * 200;
+                activeStreak = {
+                    x1: src.x, y1: sScreenY,
+                    x2: src.x + Math.cos(angle) * len,
+                    y2: sScreenY + Math.sin(angle) * len,
+                    life: 1,
+                    maxLife: 0.4 + Math.random() * 0.3
+                };
+            }
+        }
+        if (activeStreak) {
+            activeStreak.life -= 0.0166 / activeStreak.maxLife;
+            if (activeStreak.life <= 0) { activeStreak = null; }
+            else {
+                const l = activeStreak.life;
+                sctx.beginPath();
+                sctx.moveTo(activeStreak.x1, activeStreak.y1);
+                sctx.lineTo(activeStreak.x2, activeStreak.y2);
+                sctx.strokeStyle = `rgba(${themeRgb},${l * 0.6})`;
+                sctx.lineWidth = 1.8 * l;
+                sctx.stroke();
+                sctx.beginPath();
+                sctx.arc(activeStreak.x2, activeStreak.y2, 3 * l, 0, Math.PI * 2);
+                sctx.fillStyle = `rgba(${themeRgb},${l * 0.5})`;
+                sctx.fill();
+            }
+        }
+
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+
+/* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+const root = document.documentElement;
+const toggle = document.getElementById('themeToggle');
+const THEMES = ['', 'alpine', 'purple'];
+toggle.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme') || '';
+    const idx = THEMES.indexOf(current);
+    const next = THEMES[(idx + 1) % THEMES.length];
+    if (next) root.setAttribute('data-theme', next);
+    else root.removeAttribute('data-theme');
+    refreshThemeRgb();
+});
+
+/* ============================================================
+   SMOOTH SCROLL
+   ============================================================ */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        const target = document.querySelector(targetId);
+        if (target) {
+            window.scrollTo({
+                top: target.offsetTop - 80,
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
+/* ============================================================
+   SCROLL REVEALS
+   ============================================================ */
+function initReveals() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+            }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
+        observer.observe(el);
+    });
+}
+initReveals();
+</script>
+</body>
+</html>
