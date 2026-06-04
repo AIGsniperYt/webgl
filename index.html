@@ -734,7 +734,6 @@ header .container {
     padding: 6px 16px;
 }
 
-/* ── Stats section ── */
 .stats-section {
     padding: 100px 0;
     position: relative;
@@ -984,7 +983,7 @@ const versions = [
         version: "v2.0",
         hash: "c2ba033",
         date: "",
-        description: "GPU terrain rendering, merged geometries per LOD, predictive chunk loading. Drastically reduced draw calls and massive FPS improvement.",
+        description: "GPU terrain rendering with merged geometries per LOD, reducing draw calls from 2600 to 12. Predictive chunk loading with processing metrics and a tile cache using LRU eviction. Massive FPS improvement over the CPU-driven terrain in v1.0.",
         features: [
             "GPU-based terrain rendering",
             "Merged geometries per LOD (2600→12 draw calls)",
@@ -999,7 +998,7 @@ const versions = [
         version: "v3.0",
         hash: "1e29cb7",
         date: "",
-        description: "Collision detection with terrain. Fixed critical CPU/GPU noise divergence bug. Crash logic with angle-of-impact, vertical velocity, and overspeed detection.",
+        description: "Collision detection against terrain height with angle-of-impact, vertical velocity, and overspeed crash logic. Fixed critical CPU/GPU noise divergence that caused invisible walls. Stall visual indicator and respawn system added.",
         features: [
             "Terrain collision detection and response",
             "Fixed CPU/GPU noise divergence bug",
@@ -1015,7 +1014,7 @@ const versions = [
         version: "v3.5",
         hash: "4705a07",
         date: "",
-        description: "Horizon LOD at step=50 doubles render distance to 5000wu. Fog tuned for atmosphere. Profiler fixed for correct avg FPS. Respawn slot exhaustion fixed.",
+        description: "Horizon LOD at step=50 doubles render distance to 5000 world units. Fog tuned to 0.0004 for atmospheric depth. Fixed profiler avg FPS calculation and respawn slot exhaustion.",
         features: [
             "Horizon LOD doubles render distance",
             "Fog tuned to 0.0004 for atmosphere",
@@ -1030,7 +1029,7 @@ const versions = [
         version: "v4.0",
         hash: "f0be98d",
         date: "",
-        description: "Complete overhaul of terrain generation — regional mountains, ridge lines, sigmoid softening, exponential slope widths, and altitude bands.",
+        description: "Complete overhaul of terrain generation with regional mountain clusters, ridge lines with artifact fixes, sigmoid softening for natural height profiles, exponential slope widths scaling with altitude bands, and a ramped floor to prevent underwater spawns.",
         features: [
             "Radical terrain gen update (phases 1 & 2)",
             "Regional mountain clusters and plains",
@@ -1046,7 +1045,7 @@ const versions = [
         version: "v5.0",
         hash: "75373fc",
         date: "",
-        description: "Biome system with dunes, tundra, rainforest, expansive regions, and lake rendering. Heavy visual and content update.",
+        description: "Biome system with expansive regions: asymmetric wind-blown desert dunes, tundra ruggedness above 300m, rainforests, and lake water in lowland basins. The terrain gains regional character that tells you where you are just by looking at the ground.",
         features: [
             "Biome system with expansive regions",
             "Desert dunes with asymmetric wind-blown shapes",
@@ -1060,21 +1059,38 @@ const versions = [
         name: "Lakes & Water",
         version: "v6.0",
         hash: "dab01ee",
-        date: "Latest",
-        description: "Water rendering in 0m lowland basins. The latest version with all features combined.",
+        date: "",
+        description: "Fragment-shader water rendering fills lowland basins below 8m with lake blue. Noise rarely reaches +8m across all three octaves simultaneously (~1% chance), so basins stay consistently submerged with only the most extreme peaks poking through as rare islands.",
         features: [
             "Water in fragment shader",
             "All previous features combined"
         ],
         url: ROOT_PATH + "flight-sim-v6.0/index.html",
+        latest: false
+    },
+    {
+        name: "Airflow & Turn Feel",
+        version: "v6.5",
+        hash: "5bef815",
+        date: "Latest",
+        description: "Added airflow resistance layer on top of the physics model: turn rate punishes hard rotation, nose/velocity misalignment punishes sliding, and high-G banking bleeds energy. Velocity vector eases toward the nose instead of snapping there. Combined with a 360° wraparound artificial horizon, landing readout, smoother lowland terrain, and AGL altitude display.",
+        features: [
+            "360° wraparound artificial horizon with readable inverted labels",
+            "Fixed frustum culling incorrectly culling steep mountain chunks",
+            "Airflow resistance: turn drag, misalignment drag, G drag",
+            "Velocity alignment lag for inertial feel",
+            "Improved lowland terrain — less bumpy, easier to land",
+            "AGL altitude readout, spawn crash fix, balance tweaks"
+        ],
+        url: ROOT_PATH + "flight-sim/index.html",
         latest: true
     }
 ];
 
 const stats = [
-    { number: "40+", label: "Commits" },
-    { number: "9", label: "Major Versions" },
-    { number: "8 mo", label: "Development Span" },
+    { number: "50+", label: "Commits" },
+    { number: "10", label: "Major Versions" },
+    { number: "1 week", label: "Development Span" },
     { number: "Three.js", label: "Core Engine" }
 ];
 
