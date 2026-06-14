@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3D Mountain</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.158/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.158/examples/js/controls/PointerLockControls.js"></script>
+
+<script>
+// --- Scene setup
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87ceeb);
+
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 2000);
+
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// --- Lighting
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(100, 200, 100);
+scene.add(light);
+
+scene.add(new THREE.AmbientLight(0x888888));
+
+// --- Controls (WASD + mouse)
+const controls = new THREE.PointerLockControls(camera, document.body);
+
+document.body.addEventListener("click", () => {
+    controls.lock();
+});
+
+const move = { forward:false, back:false, left:false, right:false };
+
+document.addEventListener("keydown", e => {
+    if (e.code === "KeyW") move.forward = true;
+    if (e.code === "KeyS") move.back = true;
+    if (e.code === "KeyA") move.left = true;
+    if (e.code === "KeyD") move.right = true;
+});
+
+document.addEventListener("keyup", e => {
+    if (e.code === "KeyW") move.forward = false;
+    if (e.code === "KeyS") move.back = false;
+    if (e.code === "KeyA") move.left = false;
+    if (e.code === "KeyD") move.right = false;
+});
+
+// --- Simple noise
+function noise(x, z) {
+    return Math.sin(x * 0.05) * Math.cos(z * 0.05);
+}
+
+// --- Mountain function
+function mountain(x, z) {
+    const h = 80;
+    const R = 150;
+    const p = 3;
+    const q = 3;
+    const s = 2;
+
+    const r = Math.sqrt(x*x + z*z);
+    if (r > R) return 0;
+
+    let base = h * Math.pow(1 - Math.pow(r / R, p), q);
+
+    let noiseVal = 0;
+    let amp = 1;
+    let freq = 1;
+
+    for (let i = 0; i < 4; i++) {
+        noiseVal += noise(x * freq, z * freq) * amp;
+        freq *= 2;
+        amp *= 0.5;
+    }
+
+    let ridge = 1 - Math.abs(noise(x * 2, z * 2));
+
+    let detail = (noiseVal + ridge) * Math.pow(base / h, s);
+
+    return base + detail * 10;
+}
+
+// --- Create terrain
+const size = 300;
+const segments = 200;
+
+const geometry = new THREE.PlaneGeometry(size, size, segments, segments);
+geometry.rotateX(-Math.PI / 2);
+
+const vertices = geometry.attributes.position;
+
+for (let i = 0; i < vertices.count; i++) {
+    let x = vertices.getX(i);
+    let z = vertices.getZ(i);
+
+    let y = mountain(x, z);
+    vertices.setY(i, y);
+}
+
+geometry.computeVertexNormals();
+
+const material = new THREE.MeshStandardMaterial({
+    color: 0x556b2f,
+    flatShading: false
+});
+
+const terrain = new THREE.Mesh(geometry, material);
+scene.add(terrain);
+
+// --- Camera start
+camera.position.set(0, 50, 200);
+
+// --- Movement speed
+const speed = 0.8;
+
+// --- Animation loop
+function animate() {
+    requestAnimationFrame(animate);
+
+    if (controls.isLocked) {
+        if (move.forward) controls.moveForward(speed);
+        if (move.back) controls.moveForward(-speed);
+        if (move.left) controls.moveRight(-speed);
+        if (move.right) controls.moveRight(speed);
+    }
+
+    renderer.render(scene, camera);
+}
+
+animate();
+
+// --- Resize fix
+window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>

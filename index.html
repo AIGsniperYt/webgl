@@ -559,6 +559,43 @@ header .container {
     flex-wrap: wrap;
 }
 
+.hero-content .hero-badge,
+.hero-content h1,
+.hero-content p,
+.hero-content .hero-actions {
+    opacity: 0;
+}
+
+.hero-content.animate .hero-badge {
+    animation: land-badge 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+
+.hero-content.animate h1 {
+    background-size: 200% auto;
+    animation: land-up 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.35s both,
+               land-shimmer 4s ease-in-out 0.35s infinite;
+}
+
+.hero-content.animate p {
+    animation: land-up 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.55s both;
+}
+
+.hero-content.animate .hero-actions {
+    animation: land-up 0.65s cubic-bezier(0.22, 0.61, 0.36, 1) 0.75s both;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(ellipse at 50% 0%, rgba(var(--emerald-rgb), 0.08), transparent 55%);
+    opacity: 0;
+    transform-origin: top center;
+    animation: land-glow-in 1.8s ease 0.1s both;
+}
+
 .scroll-indicator {
     position: absolute;
     bottom: 40px;
@@ -567,23 +604,53 @@ header .container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    color: var(--text-muted);
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
+    gap: 10px;
+    color: var(--emerald);
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
-    animation: bob-down 2s ease-in-out infinite;
+    opacity: 0;
+    text-shadow: 0 0 12px var(--emerald-glow);
+    animation: bob-down 2s ease-in-out 1.5s infinite, land-fade 0.8s ease 1.5s both;
+}
+
+@keyframes land-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .scroll-indicator .line {
-    width: 1px;
-    height: 40px;
+    width: 1.5px;
+    height: 44px;
     background: linear-gradient(to bottom, var(--emerald), transparent);
+    box-shadow: 0 0 8px var(--emerald-glow);
 }
 
 @keyframes bob-down {
     0%, 100% { transform: translateX(-50%) translateY(0); }
     50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* ── Landing Animations ── */
+@keyframes land-badge {
+    0% { opacity: 0; transform: scale(0.75) translateY(12px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes land-up {
+    0% { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes land-shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes land-glow-in {
+    0% { opacity: 0; transform: scaleY(0.2); }
+    40% { opacity: 1; }
+    100% { opacity: 0.6; transform: scaleY(1); }
 }
 
 /* ── Version Timeline ── */
@@ -862,7 +929,7 @@ footer {
     <div class="hero-content">
         <div class="hero-badge"><i class="fa-solid fa-plane" style="margin-right:6px"></i> WebGL Flight Simulator</div>
         <h1>Flight Sim — Version History</h1>
-        <p>Every iteration of the browser-based 3D flight sim, from the first import to the latest physics overhaul. Browse, compare, and launch any version.</p>
+        <p>Every iteration of the browser-based 3D flight sim, from the first prototype to the latest release. Browse, compare, and launch any version.</p>
         <div class="hero-actions">
             <a href="#versions" class="btn-primary">
                 <i class="fa-solid fa-timeline" style="font-size:0.85rem"></i>
@@ -1070,27 +1137,135 @@ const versions = [
     },
     {
         name: "Airflow & Turn Feel",
-        version: "v6.5",
-        hash: "5bef815",
-        date: "Latest",
-        description: "Added airflow resistance layer on top of the physics model: turn rate punishes hard rotation, nose/velocity misalignment punishes sliding, and high-G banking bleeds energy. Velocity vector eases toward the nose instead of snapping there. Combined with a 360° wraparound artificial horizon, landing readout, smoother lowland terrain, and AGL altitude display.",
+        version: "v6.1",
+        hash: "e226fd3",
+        date: "",
+        description: "Added airflow resistance layer on top of the physics model: turn rate punishes hard rotation, nose/velocity misalignment punishes sliding, and high-G banking bleeds energy. Velocity vector eases toward the nose instead of snapping there. Combined with aerodynamic control authority, axis-specific inertia, and refined drag for tighter, more responsive turning.",
         features: [
-            "360° wraparound artificial horizon with readable inverted labels",
-            "Fixed frustum culling incorrectly culling steep mountain chunks",
             "Airflow resistance: turn drag, misalignment drag, G drag",
             "Velocity alignment lag for inertial feel",
-            "Improved lowland terrain — less bumpy, easier to land",
-            "AGL altitude readout, spawn crash fix, balance tweaks"
+            "Axis-specific control inertia for realistic rotation",
+            "Dynamic control authority based on speed and AoA",
+            "360° wraparound artificial horizon with readable inverted labels",
+            "Improved lowland terrain — less bumpy, easier to land"
         ],
-        url: ROOT_PATH + "flight-sim/index.html",
+        url: ROOT_PATH + "flight-sim-v6.1/index.html",
+        latest: false
+    },
+    {
+        name: "Minimap Removed + Terrain Worker",
+        version: "v6.2",
+        hash: "ad1c766",
+        date: "",
+        description: "The minimap was a hidden performance killer — removing it eliminated major lag spikes. A terrain Web Worker was written alongside it but ultimately unused: passing data from the worker back to the main thread was too slow to justify. The real win was cutting the expensive minimap render loop entirely.",
+        features: [
+            "Minimap removed entirely (was causing frame drops)",
+            "Terrain generation offloaded to Web Worker thread",
+            "Worker handles noise computation asynchronously",
+            "Smoother frame rates during terrain loading",
+            "Reduced main-thread contention"
+        ],
+        url: ROOT_PATH + "flight-sim-v6.2/index.html",
+        latest: false
+    },
+    {
+        name: "First Wind Trail",
+        version: "v6.3",
+        hash: "70a59cc",
+        date: "",
+        description: "The very first wind trail implementation: naive particle spawning every ~5 units along the flight path using THREE.Points. Looked crude compared to later tube geometry, but it was the first time you could see where you'd been. Also includes physics refactor — reduced alignment rate and removed debug reference arrows.",
+        features: [
+            "Naive particle wind trail (Points, size 3, vertex colors)",
+            "Toggle with T key (5000 max particles)",
+            "Reduced alignment rate for less aggressive velocity snapping",
+            "Post-stall fade angle tuning",
+            "Debug reference arrows removed"
+        ],
+        url: ROOT_PATH + "flight-sim-v6.3/index.html",
+        latest: false
+    },
+    {
+        name: "F-16 HUD Overhaul",
+        version: "v6.5",
+        hash: "ba7e314",
+        date: "",
+        description: "Complete overhaul of flight instruments: replaced the old circular artificial horizon + text overlay with a proper green combat HUD rendered on a 2D canvas. Added heading tape, pitch ladder, speed/Mach readout, altitude tape, and G-meter — all styled like a real fighter HUD.",
+        features: [
+            "Full canvas-drawn HUD overlay (green combat style)",
+            "Digital artificial horizon with heading tape",
+            "Pitch ladder with 10°/30°/90° markings",
+            "Speed tape with Mach readout",
+            "Altitude tape with AGL when below 200m",
+            "G-meter with colour-coded severity",
+            "Throttle position bar"
+        ],
+        url: ROOT_PATH + "flight-sim-v6.5/index.html",
+        latest: false
+    },
+    {
+        name: "Combat System",
+        version: "v7.0",
+        hash: "f52bc1f",
+        date: "",
+        description: "Full combat: machine guns with tracer streaks, heat-seeking missiles with soft/hard lock modes, enemy AI with pursuit behaviour, radar with 90° scan cone, RWR warning system, health system, hit markers, kill markers, explosion particles, smoke, and terrain deformation craters via vertex shader. The sim became a game.",
+        features: [
+            "Machine gun with tracer streaks and hit markers",
+            "Heat-seeking missiles — soft lock (growl) then hard lock (launch)",
+            "Enemy AI planes with pursuit and attack behaviour",
+            "Radar scanning with 90° wedge + bearing ticks",
+            "RWR warning system (Radar Warning Receiver)",
+            "Health, death, and respawn with death markers",
+            "Explosion particles, smoke, and terrain craters",
+            "Lead computing sight for aim prediction"
+        ],
+        url: ROOT_PATH + "flight-sim-v7.0/index.html",
+        latest: false
+    },
+    {
+        name: "Camera Immersion",
+        version: "v7.5",
+        hash: "2fa4573",
+        date: "",
+        description: "The camera went from a rigid chase-cam to a living viewpoint: dynamic FOV responds to speed and throttle (wider at high speed, tunnels on airbrake), G-force pushes the pilot's body down, the engine vibrates with RPM, and afterburner pulls the camera back. Asymmetric lerp rates make transitions feel natural — fast to widen, slow to recover.",
+        features: [
+            "Dynamic FOV: speed-dominant, throttle-minimal",
+            "Asymmetric lerp rates (fast widen, slow narrow)",
+            "G-force body simulation (pilot sinks/seats under G)",
+            "Engine vibration varying with speed",
+            "Afterburner thrust model with camera pull-back",
+            "Speed-based camera pull-back at high velocity",
+            "Camera catchup jitter eliminated"
+        ],
+        url: ROOT_PATH + "flight-sim-v7.5/index.html",
+        latest: false
+    },
+    {
+        name: "Cinematic Graphics",
+        version: "v8.0",
+        hash: "bb17cf0",
+        date: "Latest",
+        description: "Full visual overhaul: post-processing pipeline with filmic tone curve, color grading, and vignette. Procedural atmospheric sky (Preetham scattering) with real sun sphere and glow. Directional light matches the sun. FXAA anti-aliasing. Memory architecture overhaul — directional LOD rings, numeric chunk keys (zero-GC), static trail buffers — plus G-force shader desaturation that drains colour at extreme G. The sim never looked or ran this good.",
+        features: [
+            "EffectComposer pipeline: filmic tone curve, color grading, vignette",
+            "Procedural sky (Three.js Sky addon, Preetham scattering)",
+            "Real sun sphere + glow sprite with matching directional light",
+            "FXAA anti-aliasing via ShaderPass",
+            "Directional LOD rings (forward-biased terrain detail)",
+            "Numeric chunk keys eliminate GC allocation during scans",
+            "Static pre-allocated trail buffers (zero GC per frame)",
+            "G-force shader desaturation at extreme G (6.5G+)",
+            "Realistic G-force thresholds (effects at 4G, blackout at 10G)",
+            "O key state-machine debug mode"
+        ],
+        url: ROOT_PATH + "flight-sim-v8.0/index.html",
         latest: true
     }
 ];
 
 const stats = [
-    { number: "50+", label: "Commits" },
-    { number: "10", label: "Major Versions" },
-    { number: "1 week", label: "Development Span" },
+    { number: "49", label: "Commits" },
+    { number: "15", label: "Major Versions" },
+    { number: "3 weeks", label: "Development Span" },
     { number: "Three.js", label: "Core Engine" }
 ];
 
@@ -1100,7 +1275,7 @@ const stats = [
 function renderTimeline() {
     const container = document.getElementById('timeline');
     container.innerHTML = versions.map((v, i) => `
-        <div class="timeline-item reveal" style="transition-delay:${i * 0.08}s">
+        <div class="timeline-item reveal" style="transition-delay:${i * 0.035}s">
             <div class="timeline-dot ${v.latest ? 'latest' : ''}"></div>
             <div class="timeline-card">
                 <div class="timeline-header">
@@ -1184,7 +1359,9 @@ refreshThemeRgb();
     let time = 0;
     let lastStreak = Date.now();
     let activeStreak = null;
+    let lastMicroFlare = Date.now();
     let initialized = false;
+    let heroRevealTime = -1;
 
     const LAYERS = [
         { label:'far',  parallax:[0.0,0.12],  size:[0.8,1.5],    baseA:[0.30,0.45],   weight:0.30, edgeBoost:1.4, twinkle:[0.1,0.6] },
@@ -1237,10 +1414,14 @@ refreshThemeRgb();
                     parallax: rand(...layer.parallax),
                     r: isEdge ? layer.size[1] * rand(1, layer.edgeBoost) : rand(...layer.size),
                     baseA,
-                    currentA: baseA * 0.55,
+                    currentA: baseA * 0.4,
                     isLit: false,
+                    revealed: false,
+                    glow: 0,
+                    glowTarget: 0,
+                    flash: 0,
                     inBand: false,
-                    pulse: 0,
+                    scrollPhase: (Math.random() - 0.5) * 180,
                     twinkleSpeed: rand(...layer.twinkle),
                     twinklePhase: Math.random() * Math.PI * 2,
                 });
@@ -1250,15 +1431,15 @@ refreshThemeRgb();
         for (let i = 0; i < stars.length; i++) {
             for (let j = i + 1; j < stars.length; j++) {
                 const a = stars[i], b = stars[j];
-                if (Math.abs(a.parallax - b.parallax) > 0.25) continue;
+                if (Math.abs(a.parallax - b.parallax) > 0.35) continue;
                 const aEdge = a.x < w * 0.1 || a.x > w * 0.9;
                 const bEdge = b.x < w * 0.1 || b.x > w * 0.9;
                 if (aEdge !== bEdge) continue;
                 const dy = a.y - b.y;
-                if (Math.abs(dy) > 200) continue;
+                if (Math.abs(dy) > 240) continue;
                 const dx = a.x - b.x;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                const maxD = aEdge ? 140 : 100;
+                const maxD = aEdge ? 170 : 130;
                 if (dist < maxD && dist > 8) {
                     connections.push({ a, b, dist, maxDist: maxD });
                 }
@@ -1267,10 +1448,53 @@ refreshThemeRgb();
         initialized = true;
     }
 
+    function startInitSpread() {
+        const viewCenter = window.innerHeight / 2;
+        const sorted = stars.map(st => ({
+            st,
+            dist: Math.abs(st.y - viewCenter)
+        })).sort((a, b) => a.dist - b.dist);
+        let idx = 0;
+        const totalFrames = 210;
+        const batchSize = Math.max(1, Math.floor(stars.length / totalFrames));
+        function tick() {
+            for (let i = 0; i < batchSize && idx < sorted.length; i++, idx++) {
+                const s = sorted[idx].st;
+                s.isLit = true;
+                s.glowTarget = 0.28;
+                s.flash = 0.4;
+            }
+            if (idx < sorted.length) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+    }
+
+    function startHeroReveal() {
+        heroRevealTime = time;
+        const vh = window.innerHeight;
+        const viewCenter = window.innerHeight / 2;
+        const sorted = stars
+            .map(st => ({ st, dist: Math.abs(st.y - viewCenter) + (Math.random() - 0.5) * vh * 0.35 }))
+            .sort((a, b) => a.dist - b.dist);
+        let idx = 0;
+        const totalFrames = 300;
+        const batchSize = Math.max(1, Math.floor(stars.length / totalFrames));
+        function tick() {
+            for (let i = 0; i < batchSize && idx < sorted.length; i++, idx++) {
+                const s = sorted[idx].st;
+                s.revealed = true;
+                s.glowTarget = 1.0;
+            }
+            if (idx < sorted.length) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+    }
+
     function tryGenerate() {
         if (initialized) return;
         if (getDocHeight() < 100) { setTimeout(tryGenerate, 200); return; }
         generate();
+        startInitSpread();
     }
     if (document.readyState === 'complete') {
         tryGenerate();
@@ -1316,16 +1540,17 @@ refreshThemeRgb();
             const screenDist = Math.sqrt(dx * dx + dy * dy);
             if (screenDist > 160) return;
             const fade = Math.max(0, 1 - screenDist / c.maxDist);
-            const litCount = (a.isLit ? 1 : 0) + (b.isLit ? 1 : 0);
-            const scrollFade = litCount >= 2 ? 1.0 : Math.max(0, 1 - Math.abs((a.y + b.y) / 2 - viewMidY) / (vh * 1.2));
-            const litBoost = litCount * 0.35;
-            const alpha = fade * scrollFade * (0.1 + litBoost);
+            const avgGlow = (c.a.glow + c.b.glow) / 2;
+            const avgFlash = Math.max(c.a.flash, c.b.flash);
+            const scrollFade = Math.max(0, 1 - Math.abs((a.y + b.y) / 2 - viewMidY) / (vh * 1.2));
+            const litBoost = avgGlow * 0.5 + avgFlash * 0.4;
+            const alpha = fade * scrollFade * (0.08 + litBoost);
             if (alpha > 0.01) {
                 sctx.beginPath();
                 sctx.moveTo(a.x, ay);
                 sctx.lineTo(b.x, by);
                 sctx.strokeStyle = `rgba(${themeRgb},${alpha})`;
-                sctx.lineWidth = 0.4 + litCount * 0.5;
+                sctx.lineWidth = 0.3 + avgGlow * 0.7 + avgFlash * 0.6;
                 sctx.stroke();
             }
         });
@@ -1334,36 +1559,50 @@ refreshThemeRgb();
             const screenY = st.y - scrollY * st.parallax;
             if (screenY < -50 || screenY > vh + 50) return;
 
-            const distFromView = Math.abs(st.y - viewMidY);
-            const bandHalf = vh * 0.18;
-
-            const wasInBand = st.inBand;
-            st.inBand = distFromView < bandHalf;
-            if (st.inBand && !wasInBand) {
-                st.isLit = !st.isLit;
-                st.pulse = 1.0;
+            if (!st.isLit) {
+                const threshold = vh * 0.14 + (st.twinklePhase / (Math.PI * 2)) * vh * 0.12;
+                const offsetY = viewMidY + st.scrollPhase;
+                if (Math.abs(st.y - offsetY) < threshold) {
+                    st.isLit = true;
+                    st.glowTarget = 1.0;
+                    st.flash = 1.0;
+                }
             }
 
-            const targetA = st.baseA * (st.isLit ? 1.0 : 0.55);
+            st.glow += (st.glowTarget - st.glow) * 0.035;
+
+            if (st.flash > 0.001) {
+                st.flash *= 0.92;
+            } else {
+                st.flash = 0;
+            }
+
+            const brightness = st.glow + st.flash;
+            const targetA = st.baseA * (0.35 + 0.65 * Math.min(brightness, 1));
             st.currentA += (targetA - st.currentA) * 0.08;
 
             const twinkle = Math.sin(time * st.twinkleSpeed + st.twinklePhase) * 0.12 + 0.88;
-            const alpha = st.currentA * twinkle;
-            const size = st.r * (st.isLit ? 1.0 : 0.65);
+            const breath = 1 + Math.sin(time * 0.2 + st.twinklePhase) * 0.1;
+            const alpha = st.currentA * twinkle * breath;
+            const size = st.r * (0.45 + 0.55 * st.glow) * (1 + st.flash * 0.3);
+
+            if (st.glow > 0.01) {
+                const glowR = size * (2 + st.glow * 4 + st.flash * 3);
+                const grad = sctx.createRadialGradient(st.x, screenY, size * 0.2, st.x, screenY, glowR);
+                const haloA = Math.min(st.glow * 0.2 + st.flash * 0.25, 0.45);
+                grad.addColorStop(0, `rgba(${themeRgb},${haloA})`);
+                grad.addColorStop(0.4, `rgba(${themeRgb},${haloA * 0.5})`);
+                grad.addColorStop(1, `rgba(${themeRgb},0)`);
+                sctx.beginPath();
+                sctx.arc(st.x, screenY, glowR, 0, Math.PI * 2);
+                sctx.fillStyle = grad;
+                sctx.fill();
+            }
 
             sctx.beginPath();
             sctx.arc(st.x, screenY, size, 0, Math.PI * 2);
             sctx.fillStyle = `rgba(${themeRgb},${Math.min(alpha, 0.95)})`;
             sctx.fill();
-
-            if (st.pulse > 0.01) {
-                sctx.beginPath();
-                sctx.arc(st.x, screenY, size * (1 + st.pulse * 4), 0, Math.PI * 2);
-                sctx.strokeStyle = `rgba(${themeRgb},${st.pulse * 0.4})`;
-                sctx.lineWidth = 2 * st.pulse;
-                sctx.stroke();
-                st.pulse *= 0.9;
-            }
         });
 
         if (!activeStreak && Date.now() - lastStreak > 5000 + Math.random() * 3000) {
@@ -1400,9 +1639,49 @@ refreshThemeRgb();
             }
         }
 
+        if (Date.now() - lastMicroFlare > 1200 + Math.random() * 2800) {
+            lastMicroFlare = Date.now();
+            for (let attempt = 0; attempt < 15; attempt++) {
+                const st = stars[Math.floor(Math.random() * stars.length)];
+                if (st.revealed && st.glow > 0.4) {
+                    const sy = st.y - scrollY * st.parallax;
+                    if (sy >= -50 && sy <= vh + 50) {
+                        st.flash = 0.18 + Math.random() * 0.15;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (time < 2) {
+            const veilA = Math.max(0, 1 - time / 2) * 0.65;
+            sctx.fillStyle = `rgba(4,20,13,${veilA})`;
+            sctx.fillRect(0, 0, w, vh);
+        }
+
+        if (heroRevealTime >= 0) {
+            const elapsed = time - heroRevealTime;
+            const duration = 5.0;
+            const progress = Math.min(elapsed / duration, 1);
+            if (progress < 1) {
+                const radius = vh * (0.06 + progress * 0.5);
+                const alpha = (1 - progress) * 0.08;
+                const gx = w / 2;
+                const gy = scrollY + vh / 2;
+                const g = sctx.createRadialGradient(gx, gy, 0, gx, gy, radius);
+                g.addColorStop(0, `rgba(${themeRgb},${alpha})`);
+                g.addColorStop(0.5, `rgba(${themeRgb},${alpha * 0.4})`);
+                g.addColorStop(1, `rgba(${themeRgb},0)`);
+                sctx.fillStyle = g;
+                sctx.fillRect(0, 0, w, vh);
+            }
+        }
+
         requestAnimationFrame(draw);
     }
     draw();
+
+    window.__heroReveal = startHeroReveal;
 })();
 
 /* ============================================================
@@ -1455,6 +1734,18 @@ function initReveals() {
     });
 }
 initReveals();
+
+/* ============================================================
+   LANDING ANIMATION
+   ============================================================ */
+window.addEventListener('load', () => {
+    requestAnimationFrame(() => {
+        document.querySelector('.hero-content')?.classList.add('animate');
+    });
+    setTimeout(() => {
+        if (window.__heroReveal) window.__heroReveal();
+    }, 1800);
+});
 </script>
 </body>
 </html>
